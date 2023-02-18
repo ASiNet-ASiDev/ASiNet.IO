@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ASiNet.IO;
+﻿namespace ASiNet.IO;
 public static class StreamExtensions
 {
     /// <summary>
@@ -100,7 +93,25 @@ public static class StreamExtensions
     }
 
     /// <summary>
-    /// Move bytes.
+    /// Write bytes to start of stream.
+    /// </summary>
+    /// <param name="bytes">Write bytes.</param>
+    /// <param name="bufferSize"> Default size: 0.5Mb (524288 bytes) </param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void WriteStart(this Stream stream, byte[] bytes, int bufferSize = 524288)
+    {
+        if (bufferSize <= 0)
+            throw new ArgumentOutOfRangeException("bufferSize < 0");
+        if (bytes.Length <= 0)
+            return;
+
+        MoveBase(stream, 0, bytes.Length, bufferSize);
+        stream.Position = 0;
+        stream.Write(bytes);
+    }
+
+    /// <summary>
+    /// Move bytes from start position to new position.
     /// </summary>
     /// <param name="start">Position of first byte to moved.</param>
     /// <param name="to">New position of first byte.</param>
@@ -165,7 +176,7 @@ public static class StreamExtensions
             yield break;
         if (maxPosition == -1)
             maxPosition = stream.Length;
-        if(maxCount == -1)
+        if (maxCount == -1)
             maxCount = int.MaxValue;
         var result = -2L;
         var count = 0;
@@ -226,11 +237,11 @@ public static class StreamExtensions
 
     private static long FindBase(Stream stream, short offset, byte[] bytes)
     {
-        if(offset == bytes.Length)
+        if (offset == bytes.Length)
             return stream.Position - bytes.Length;
 
         var newByte = stream.ReadByte();
-        if(newByte == bytes[offset])
+        if (newByte == bytes[offset])
             return FindBase(stream, ++offset, bytes);
         else if (newByte == -1)
             return -1;

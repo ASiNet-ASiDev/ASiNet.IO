@@ -1,6 +1,25 @@
 ﻿namespace ASiNet.IO;
 public static class StreamExtensions
 {
+
+    /// <summary>
+    /// Write bytes to start of stream.
+    /// </summary>
+    /// <param name="bytes">Write bytes.</param>
+    /// <param name="bufferSize"> Default size: 0.5Mb (524288 bytes) </param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void WriteStart(this Stream stream, byte[] bytes, int bufferSize = 524288)
+    {
+        if (bufferSize <= 0)
+            throw new ArgumentOutOfRangeException("bufferSize < 0");
+        if (bytes.Length <= 0)
+            return;
+
+        MoveBase(stream, 0, bytes.Length, bufferSize);
+        stream.Position = 0;
+        stream.Write(bytes);
+    }
+
     /// <summary>
     /// Insert bytes.
     /// </summary>
@@ -90,24 +109,6 @@ public static class StreamExtensions
         MoveBase(stream, start, offset, bufferSize);
         stream.Position = start;
         stream.Write(new byte[offset]);
-    }
-
-    /// <summary>
-    /// Write bytes to start of stream.
-    /// </summary>
-    /// <param name="bytes">Write bytes.</param>
-    /// <param name="bufferSize"> Default size: 0.5Mb (524288 bytes) </param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void WriteStart(this Stream stream, byte[] bytes, int bufferSize = 524288)
-    {
-        if (bufferSize <= 0)
-            throw new ArgumentOutOfRangeException("bufferSize < 0");
-        if (bytes.Length <= 0)
-            return;
-
-        MoveBase(stream, 0, bytes.Length, bufferSize);
-        stream.Position = 0;
-        stream.Write(bytes);
     }
 
     /// <summary>

@@ -100,6 +100,34 @@ public static class StreamExtensions
     }
 
     /// <summary>
+    /// Move bytes.
+    /// </summary>
+    /// <param name="start">Position of first byte to moved.</param>
+    /// <param name="to">New position of first byte.</param>
+    /// <param name="bufferSize">Default size: 0.5Mb (524288 bytes)</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void MoveTo(this Stream stream, long start, long to, int length, int bufferSize = 524288)
+    {
+        if (start > stream.Length || to > stream.Length)
+            throw new ArgumentException("start or end > stream.Length");
+        if (bufferSize <= 0)
+            throw new ArgumentOutOfRangeException("bufferSize < 0");
+        if (length <= 0)
+            throw new ArgumentOutOfRangeException("offset < 0");
+
+        var data = new byte[length];
+
+        stream.Position = start;
+        var count = stream.Read(data);
+
+        CutBase(stream, start, count, bufferSize);
+        MoveBase(stream, to, count, bufferSize);
+        stream.Position = to;
+        stream.Write(data, 0, count);
+    }
+
+    /// <summary>
     /// Find bytes.
     /// </summary>
     /// <param name="bytes"> Pattern max length: <see cref="short.MaxValue"/></param>

@@ -25,6 +25,14 @@ using (var stream = new MemoryStream())
     {
         Console.WriteLine($"Find All Bytes: [{string.Join(" ", findBytes.ToArray())}] in: [{string.Join(" ", stream.ToArray())}] result: [{item}]");
     }
+
+    stream.MoveTo(4, 0, 4);
+    Console.WriteLine($"Move To:  result: [{string.Join(" ", stream.ToArray())}]");
 }
 
+tt(x => x < 10);
+
 Console.ReadKey();
+
+
+void tt(Func<int, bool> act) { }
